@@ -1,224 +1,100 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>System Adoption Launch Pack - Interactive Demo</title>
-  <meta name="description" content="Interactive system adoption training demo for a Service Coordinator role in an industrial field-service business." />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f2ec">
+<title>System Adoption Studio — Live Training Lab</title>
+<meta name="description" content="Turn real enterprise workflows into role-ready training, practice and performance support.">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="demo-ribbon">INTERACTIVE DEMO · FICTIONAL SYSTEM & DATA</div>
-
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">SA</div>
-      <div>
-        <div class="brand-title">System Adoption Studio</div>
-        <div class="brand-sub">Enterprise training that starts from the real workflow</div>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="ghost" id="openPackBtn">Learning Pack</button>
-      <button class="primary" id="restartBtn">Restart demo</button>
-    </div>
-  </header>
-
-  <main class="shell">
-    <section class="hero card">
-      <div class="hero-copy">
-        <div class="eyebrow">CLIENT SHOWROOM</div>
-        <h1>From system access to a workforce-ready learning package.</h1>
-        <p>This demo shows how one <strong>Service Coordinator</strong> learns three critical workflows inside a field-service system: create a job, assign a technician, and close the job correctly.</p>
-        <div class="hero-tags">
-          <span>1 role</span><span>3 workflows</span><span>guided practice</span><span>assessment</span><span>job aids</span>
-        </div>
-      </div>
-      <div class="hero-score">
-        <div class="score-label">Role readiness</div>
-        <div class="score-ring"><span id="readinessScore">0%</span></div>
-        <div class="score-note" id="readinessText">Complete the three workflows</div>
-      </div>
-    </section>
-
-    <section class="workspace-grid">
-      <aside class="sidebar card">
-        <div class="side-head">
-          <div class="eyebrow">ROLE</div>
-          <h2>Service Coordinator</h2>
-          <p>WA Industrial Field Services</p>
-        </div>
-
-        <div class="mode-box">
-          <label>Learning mode</label>
-          <div class="segmented" role="tablist" aria-label="Learning mode">
-            <button class="mode active" data-mode="guided">Guided</button>
-            <button class="mode" data-mode="practice">Practice</button>
-            <button class="mode" data-mode="assessment">Assessment</button>
-          </div>
-          <small id="modeHint">Guided mode explains every action.</small>
-        </div>
-
-        <nav class="workflow-nav" aria-label="Workflows">
-          <button class="workflow-item active" data-workflow="create">
-            <span class="wf-num">01</span>
-            <span><strong>Create service job</strong><small>Capture request and priority</small></span>
-            <span class="status-dot" id="status-create"></span>
-          </button>
-          <button class="workflow-item" data-workflow="assign">
-            <span class="wf-num">02</span>
-            <span><strong>Assign technician</strong><small>Match skills, date and safety</small></span>
-            <span class="status-dot" id="status-assign"></span>
-          </button>
-          <button class="workflow-item" data-workflow="close">
-            <span class="wf-num">03</span>
-            <span><strong>Close service job</strong><small>Capture evidence and outcome</small></span>
-            <span class="status-dot" id="status-close"></span>
-          </button>
-        </nav>
-
-        <div class="download-mini">
-          <strong>Showroom pack</strong>
-          <a href="#deliverables">User Guide · preview in this showroom</a>
-          <a href="#deliverables">Quick Reference · preview in this showroom</a>
-          <a href="#deliverables">Trainer Guide · preview in this showroom</a>
-          <a href="#deliverables">Assessment · open readiness check</a>
-        </div>
-      </aside>
-
-      <section class="system card" aria-label="System simulation">
-        <div class="system-top">
-          <div class="system-brand">
-            <div class="system-logo">FS</div>
-            <div><strong>FieldServe 360</strong><small>Operations Workspace</small></div>
-          </div>
-          <div class="system-meta"><span>Service Coordinator</span><span>Training tenant</span></div>
-        </div>
-
-        <div class="system-body">
-          <div class="app-nav">
-            <button class="app-nav-item active">Service jobs</button>
-            <button class="app-nav-item">Customers</button>
-            <button class="app-nav-item">Technicians</button>
-            <button class="app-nav-item">Assets</button>
-            <button class="app-nav-item">Reports</button>
-          </div>
-
-          <div class="app-main">
-            <div class="breadcrumb">Service jobs / <span id="crumbCurrent">New job</span></div>
-            <div class="app-heading">
-              <div><h2 id="workflowTitle">Create service job</h2><p id="workflowSubtitle">Capture a complete service request before dispatch.</p></div>
-              <div class="pill" id="stepPill">Step 1 of 5</div>
-            </div>
-
-            <div class="learning-callout" id="learningCallout">
-              <div class="callout-icon">i</div>
-              <div><strong id="calloutTitle">Start with the customer</strong><p id="calloutText">Choose the customer that owns the site and asset. This drives SLA, billing and contact details.</p></div>
-            </div>
-
-            <div id="workflowCanvas"></div>
-
-            <div class="system-footer">
-              <button class="ghost" id="prevStepBtn">Back</button>
-              <div class="step-dots" id="stepDots"></div>
-              <button class="primary" id="nextStepBtn">Continue</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="coach card">
-        <div class="coach-head">
-          <div class="eyebrow">PERFORMANCE SUPPORT</div>
-          <h2>In-the-flow coach</h2>
-          <p>The learner gets help at the moment of work, not only before it.</p>
-        </div>
-
-        <div class="coach-card">
-          <div class="coach-label">WHY THIS STEP MATTERS</div>
-          <p id="whyText">Correct customer and site data prevents dispatch and billing errors.</p>
-        </div>
-
-        <div class="coach-card warning">
-          <div class="coach-label">COMMON ERROR</div>
-          <p id="errorText">Creating a job against the parent customer instead of the actual operating site.</p>
-        </div>
-
-        <div class="coach-card success">
-          <div class="coach-label">DONE WHEN</div>
-          <p id="doneText">Customer, site, asset, issue and priority are all complete.</p>
-        </div>
-
-        <button class="assessment-btn" id="quizBtn">Open readiness check</button>
-
-        <div class="evidence-box">
-          <div><span>Source</span><strong>Workflow discovery</strong></div>
-          <div><span>Version</span><strong>Demo v1.0</strong></div>
-          <div><span>Owner</span><strong>Operations</strong></div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="deliverables card" id="deliverables">
-      <div class="eyebrow">WHAT THE CLIENT RECEIVES</div>
-      <h2>One workflow becomes a reusable adoption asset set.</h2>
-      <div class="deliverable-grid">
-        <article><b>01</b><h3>Workflow Blueprint</h3><p>Role, task, decisions, exceptions and handoffs.</p></article>
-        <article><b>02</b><h3>User Guide</h3><p>Fresh documentation built from the working system.</p></article>
-        <article><b>03</b><h3>Guided Walkthrough</h3><p>Step-by-step learning with context and error prevention.</p></article>
-        <article><b>04</b><h3>Practice Simulation</h3><p>Users rehearse safely without touching production.</p></article>
-        <article><b>05</b><h3>Job Aids</h3><p>One-page reference cards for use on the job.</p></article>
-        <article><b>06</b><h3>Assessment</h3><p>Role readiness checks tied to real tasks.</p></article>
-        <article><b>07</b><h3>Trainer Pack</h3><p>Facilitator notes, exercises and observation criteria.</p></article>
-        <article><b>08</b><h3>Source & Version Pack</h3><p>Editable source, ownership and maintenance map.</p></article>
-      </div>
-    </section>
-
-    <section class="cta card">
-      <div><div class="eyebrow">PILOT OFFER</div><h2>Give us access to one role and three workflows.</h2><p>We map the real work, build the learning assets and prove the adoption model before a larger rollout.</p></div>
-      <div class="cta-price"><span>Indicative pilot</span><strong>A$7.5k–10k</strong><small>1 role · 3 workflows · fixed-scope pilot</small></div>
-    </section>
-  </main>
-
-  <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <aside class="drawer" id="packDrawer" aria-hidden="true">
-    <div class="drawer-head"><div><div class="eyebrow">DELIVERABLES</div><h2>Adoption Launch Pack</h2></div><button class="icon-btn" id="closePackBtn">×</button></div>
-    <div class="drawer-list">
-      <a href="#deliverables"><span>📘</span><div><strong>User Guide</strong><small>Fresh role-based system manual</small></div></a>
-      <a href="#deliverables"><span>⚡</span><div><strong>Quick Reference</strong><small>Three workflows on compact job aids</small></div></a>
-      <a href="#deliverables"><span>🎓</span><div><strong>Trainer Guide</strong><small>Facilitation and observation criteria</small></div></a>
-      <a href="#deliverables"><span>✅</span><div><strong>Assessment Pack</strong><small>Knowledge and task readiness check</small></div></a>
-      <a href="#deliverables"><span>📦</span><div><strong>Package Overview</strong><small>Client-facing scope summary</small></div></a>
-      <a href="#workflowCanvas"><span>🎬</span><div><strong>Workflow Video 01</strong><small>Create service job</small></div></a>
-      <a href="#workflowCanvas"><span>🎬</span><div><strong>Workflow Video 02</strong><small>Assign technician</small></div></a>
-      <a href="#workflowCanvas"><span>🎬</span><div><strong>Workflow Video 03</strong><small>Close service job</small></div></a>
-    </div>
+<header class="site-header">
+  <a class="site-brand" href="#top"><span class="site-mark">SA</span><span><b>System Adoption Studio</b><small>Enterprise systems → workforce readiness</small></span></a>
+  <nav class="site-nav"><a href="#how">How it works</a><a href="#lab">Live demo</a><a href="#deliverables">Deliverables</a><button class="site-cta" id="openPackBtn">Pilot pack</button></nav>
+</header>
+<main id="top">
+<section class="sales-hero outer-shell">
+  <div class="sales-copy">
+    <span class="kicker">SYSTEM ADOPTION · CLIENT SHOWROOM</span>
+    <h1>Your system exists.<br><em>Your training doesn’t.</em></h1>
+    <p class="lede">We study the real workflow, reconstruct what people actually need to do, and turn it into role-based guidance, practice and readiness evidence.</p>
+    <div class="hero-actions"><button class="button primary-button" id="enterLabHeroBtn">Enter the live training lab</button><a class="button secondary-button" href="#deliverables">See the package</a></div>
+    <div class="hero-proof"><span><b>1</b> role</span><span><b>3</b> critical workflows</span><span><b>1</b> fixed-scope pilot</span></div>
+  </div>
+  <aside class="hero-panel"><span class="panel-label">THE OUTCOME</span><blockquote>“A new user can perform the job correctly without sitting next to the expert.”</blockquote>
+    <div class="outcome-list"><div><span>01</span><b>Understand</b><small>role + process</small></div><div><span>02</span><b>Practice</b><small>inside a safe replica</small></div><div><span>03</span><b>Perform</b><small>with in-flow support</small></div></div>
   </aside>
+</section>
 
-  <div class="modal-backdrop" id="quizBackdrop"></div>
-  <section class="quiz-modal" id="quizModal" aria-hidden="true">
-    <div class="quiz-head"><div><div class="eyebrow">READINESS CHECK</div><h2>Service Coordinator assessment</h2></div><button class="icon-btn" id="closeQuizBtn">×</button></div>
-    <form id="quizForm">
-      <fieldset><legend>1. Why must the operating site be selected correctly?</legend>
-        <label><input type="radio" name="q1" value="a"> To change the company logo</label>
-        <label><input type="radio" name="q1" value="b"> It drives location, SLA, contacts and dispatch context</label>
-        <label><input type="radio" name="q1" value="c"> It is optional if an asset is selected</label>
-      </fieldset>
-      <fieldset><legend>2. Before assigning a technician, what should be checked?</legend>
-        <label><input type="radio" name="q2" value="a"> Skills, availability and site/safety requirements</label>
-        <label><input type="radio" name="q2" value="b"> Only who lives closest</label>
-        <label><input type="radio" name="q2" value="c"> Only who has the lowest hourly rate</label>
-      </fieldset>
-      <fieldset><legend>3. What is required before closing a service job?</legend>
-        <label><input type="radio" name="q3" value="a"> A new customer record</label>
-        <label><input type="radio" name="q3" value="b"> Completion summary, labour/parts and supporting evidence</label>
-        <label><input type="radio" name="q3" value="c"> Nothing if the technician says it is done</label>
-      </fieldset>
-      <button class="primary full" type="submit">Submit assessment</button>
-      <div class="quiz-result" id="quizResult"></div>
-    </form>
-  </section>
+<section class="logic-strip outer-shell" id="how">
+<div><span>INPUT</span><b>System access + SME</b><small>Old material optional.</small></div><i>→</i>
+<div><span>DISCOVERY</span><b>Role + workflow map</b><small>Tasks, decisions, errors.</small></div><i>→</i>
+<div><span>BUILD</span><b>Adoption assets</b><small>Guide, practice, job aids.</small></div><i>→</i>
+<div><span>RESULT</span><b>Role readiness</b><small>People can do the work.</small></div>
+</section>
 
-  <script src="app.js"></script>
-</body>
-</html>
+<section class="lab-section" id="lab">
+  <div class="lab-intro outer-shell">
+    <div><span class="kicker kicker-dark">LIVE PRODUCT EXPERIENCE</span><h2>This is the training environment, not the sales page.</h2><p>The dark frame is a separate sandbox. Enter it full-screen, complete the learner journey, then exit back to the showroom.</p></div>
+    <div class="lab-key"><span class="status-live"><i></i> LIVE TRAINING LAB</span><small>Fictional system + fictional data</small></div>
+  </div>
+
+  <div class="lab-stage" id="labStage">
+    <div class="lab-browser">
+      <div class="lab-browser-bar"><div class="browser-dots"><i></i><i></i><i></i></div><div class="browser-address"><span>TRAINING SANDBOX</span> fieldserve360.local / service-coordinator</div><div class="browser-actions"><span class="sandbox-badge">DEMO DATA</span><button class="lab-exit" id="exitLabBtn">Exit lab</button></div></div>
+      <div class="lab-product-header"><div><span class="lab-eyebrow">SYSTEM ADOPTION LAB</span><strong>Service Coordinator · Role Readiness Journey</strong></div><div class="lab-header-actions"><button class="lab-small-button" id="restartBtn">Restart</button><button class="lab-enter" id="enterLabBtn">Enter full-screen lab</button></div></div>
+
+      <div class="lab-workspace">
+        <aside class="sidebar lab-panel">
+          <div class="side-head"><div class="lab-eyebrow">LEARNER ROLE</div><h2>Service Coordinator</h2><p>WA Industrial Field Services</p></div>
+          <div class="mode-box"><label>Learning mode</label><div class="segmented" role="tablist"><button class="mode active" data-mode="guided">Guided</button><button class="mode" data-mode="practice">Practice</button><button class="mode" data-mode="assessment">Assessment</button></div><small id="modeHint">Guided mode explains every action.</small></div>
+          <nav class="workflow-nav">
+            <button class="workflow-item active" data-workflow="create"><span class="wf-num">01</span><span><strong>Create service job</strong><small>Capture request and priority</small></span><span class="status-dot" id="status-create"></span></button>
+            <button class="workflow-item" data-workflow="assign"><span class="wf-num">02</span><span><strong>Assign technician</strong><small>Match skills, date and safety</small></span><span class="status-dot" id="status-assign"></span></button>
+            <button class="workflow-item" data-workflow="close"><span class="wf-num">03</span><span><strong>Close service job</strong><small>Capture evidence and outcome</small></span><span class="status-dot" id="status-close"></span></button>
+          </nav>
+          <div class="readiness-mini"><span>ROLE READINESS</span><strong id="readinessScore">0%</strong><small id="readinessText">0/3 workflows complete</small></div>
+        </aside>
+
+        <section class="system lab-panel">
+          <div class="system-top"><div class="system-brand"><div class="system-logo">FS</div><div><strong>FieldServe 360</strong><small>Operations Workspace</small></div></div><div class="system-meta"><span>Service Coordinator</span><span>Training tenant</span></div></div>
+          <div class="system-body"><div class="app-nav"><button class="app-nav-item active">Service jobs</button><button class="app-nav-item">Customers</button><button class="app-nav-item">Technicians</button><button class="app-nav-item">Assets</button><button class="app-nav-item">Reports</button></div>
+            <div class="app-main"><div class="breadcrumb">Service jobs / <span id="crumbCurrent">New job</span></div><div class="app-heading"><div><h2 id="workflowTitle">Create service job</h2><p id="workflowSubtitle">Capture a complete service request before dispatch.</p></div><div class="pill" id="stepPill">Step 1 of 5</div></div>
+            <div class="learning-callout" id="learningCallout"><div class="callout-icon">i</div><div><strong id="calloutTitle">Start with the customer</strong><p id="calloutText">Choose the customer that owns the site and asset. This drives SLA, billing and contact details.</p></div></div>
+            <div id="workflowCanvas"></div><div class="system-footer"><button class="ghost" id="prevStepBtn">Back</button><div class="step-dots" id="stepDots"></div><button class="primary" id="nextStepBtn">Continue</button></div></div>
+          </div>
+        </section>
+
+        <aside class="coach lab-panel"><div class="coach-head"><div class="lab-eyebrow">IN-FLOW SUPPORT</div><h2>Performance coach</h2><p>Help appears at the moment of work, not only before it.</p></div>
+          <div class="coach-card"><div class="coach-label">WHY THIS STEP MATTERS</div><p id="whyText">Correct customer and site data prevents dispatch and billing errors.</p></div>
+          <div class="coach-card warning"><div class="coach-label">COMMON ERROR</div><p id="errorText">Creating a job against the parent customer instead of the actual operating site.</p></div>
+          <div class="coach-card success"><div class="coach-label">DONE WHEN</div><p id="doneText">Customer, site, asset, issue and priority are all complete.</p></div>
+          <button class="assessment-btn" id="quizBtn">Open readiness check</button>
+          <div class="evidence-box"><div><span>Source</span><strong>Workflow discovery</strong></div><div><span>Version</span><strong>Demo v2.0</strong></div><div><span>Owner</span><strong>Operations</strong></div></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="deliverables-section outer-shell" id="deliverables">
+<span class="kicker">THE CLIENT TAKES THIS HOME</span><div class="section-heading"><h2>Not a video. A complete adoption asset set.</h2><p>Every artifact comes from the same validated workflow model, so the guide, simulation, assessment and support material stay aligned.</p></div>
+<div class="deliverable-grid">
+<article><b>01</b><h3>Workflow Blueprint</h3><p>Role, task, decisions, exceptions and handoffs.</p></article><article><b>02</b><h3>Fresh User Guide</h3><p>New documentation built from the working system.</p></article><article><b>03</b><h3>Guided Walkthroughs</h3><p>Context-rich task training for critical workflows.</p></article><article><b>04</b><h3>Practice Simulation</h3><p>Safe rehearsal without touching production.</p></article><article><b>05</b><h3>Job Aids + FAQ</h3><p>Fast help when memory fades during real work.</p></article><article><b>06</b><h3>Readiness Assessment</h3><p>Knowledge and task performance tied to the role.</p></article><article><b>07</b><h3>Trainer / Manager Kit</h3><p>Facilitation, observation and coaching material.</p></article><article><b>08</b><h3>Source + Version Pack</h3><p>Maintainable source, ownership and change history.</p></article>
+</div>
+</section>
+
+<section class="pilot-section outer-shell"><div><span class="kicker">FIXED-SCOPE PILOT</span><h2>Start with one role and three workflows.</h2><p>Prove the method on a small but meaningful slice of the business before a broader rollout.</p></div><div class="pilot-card"><span>INDICATIVE PILOT</span><strong>A$7.5k–10k</strong><small>1 role · 3 workflows · final scope subject to discovery</small><button class="site-cta" id="openPackBtn2">View what’s included</button></div></section>
+</main>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="packDrawer" aria-hidden="true"><div class="drawer-head"><div><span class="kicker">PILOT PACKAGE</span><h2>System Adoption Launch Pack</h2></div><button class="icon-btn" id="closePackBtn">×</button></div><div class="drawer-note">One role. Three business-critical workflows. Built from the real system and validated with the SME.</div><div class="drawer-list"><a href="#deliverables"><span>01</span><div><strong>Workflow Blueprint</strong><small>Role + process reconstruction</small></div></a><a href="#deliverables"><span>02</span><div><strong>User Guide</strong><small>Fresh system documentation</small></div></a><a href="#lab"><span>03</span><div><strong>Guided + Practice Lab</strong><small>Hands-on workflow learning</small></div></a><a href="#deliverables"><span>04</span><div><strong>Quick Reference + FAQ</strong><small>In-the-flow support</small></div></a><a href="#deliverables"><span>05</span><div><strong>Assessment + Trainer Pack</strong><small>Readiness evidence</small></div></a><a href="#deliverables"><span>06</span><div><strong>Source + Version Pack</strong><small>Maintainable client-owned assets</small></div></a></div></aside>
+
+<div class="modal-backdrop" id="quizBackdrop"></div>
+<section class="quiz-modal" id="quizModal" aria-hidden="true"><div class="quiz-head"><div><span class="lab-eyebrow">READINESS CHECK</span><h2>Service Coordinator assessment</h2></div><button class="icon-btn" id="closeQuizBtn">×</button></div><form id="quizForm">
+<fieldset><legend>1. Why must the operating site be selected correctly?</legend><label><input type="radio" name="q1" value="a"> To change the company logo</label><label><input type="radio" name="q1" value="b"> It drives location, SLA, contacts and dispatch context</label><label><input type="radio" name="q1" value="c"> It is optional if an asset is selected</label></fieldset>
+<fieldset><legend>2. Before assigning a technician, what should be checked?</legend><label><input type="radio" name="q2" value="a"> Skills, availability and site/safety requirements</label><label><input type="radio" name="q2" value="b"> Only who lives closest</label><label><input type="radio" name="q2" value="c"> Only who has the lowest hourly rate</label></fieldset>
+<fieldset><legend>3. What is required before closing a service job?</legend><label><input type="radio" name="q3" value="a"> A new customer record</label><label><input type="radio" name="q3" value="b"> Completion summary, labour/parts and supporting evidence</label><label><input type="radio" name="q3" value="c"> Nothing if the technician says it is done</label></fieldset>
+<button class="primary full" type="submit">Submit assessment</button><div class="quiz-result" id="quizResult"></div></form></section>
+<script src="app.js"></script>
+</body></html>
