@@ -430,3 +430,83 @@ Technician overruns current job; dispatcher reviews Schedule Board, moves lower-
 
 The V4 Training Twin should use **original visual design** while preserving the real operating model, terminology, roles, status transitions and workflow semantics from the current Field Service documentation.
 
+
+
+## Extended 2026 feature surface
+
+### 18. Entitlements
+- Dynamically apply price lists / discounts to work-order products and services
+- Applicability can include service account, billing account, product/service, customer asset, asset category, incident type
+- Affects price, not product/service cost
+
+Source:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/work-order-entitlements-overview
+
+### 19. Warranties
+- Warranty records for accounts, locations and customer assets
+- Tracks coverage context for repair/replacement/service guarantees
+- Provides service context; does not automatically change work-order pricing
+
+Source:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/warranties
+
+### 20. Work order resolutions
+- Standard resolution records
+- Can be associated with incident types
+- Support reporting and consistent issue-resolution capture
+
+Source:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/work-order-resolutions
+
+### 21. Teams collaboration
+- Connected Microsoft Teams chats linked to work orders
+- Helps stakeholders collaborate without leaving Field Service
+- Related chats can remain associated with the work-order context
+
+Source:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/field-service-teams-collaboration
+
+### 22. Copilot and AI features
+Current Field Service AI surface includes:
+- Work-order summaries
+- Natural-language questions
+- Mobile work-order update suggestions (preview)
+- Inspection-template creation from images/PDFs (preview)
+- Agent feed / supervision
+- Form-fill assistance
+- View filtering / charts / row summaries / timeline highlights
+
+Sources:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/copilot-overview
+- https://learn.microsoft.com/en-us/dynamics365/field-service/work-order-update
+- https://learn.microsoft.com/en-us/dynamics365/field-service/use-work-order-recap
+
+### 23. Financial controls / NTE context
+- Work orders carry pricing/billing context
+- Dynamics Field Service work-order data model includes price not-to-exceed proximity/overage fields
+- Products/services can carry billable quantities/durations and entitlement references
+
+Sources:
+- https://learn.microsoft.com/en-us/dynamics365/field-service/developer/reference/entities/msdyn_workorder
+- https://learn.microsoft.com/en-us/dynamics365/field-service/developer/reference/entities/msdyn_workorderservice
+
+### Additional training workflows
+
+#### Dispatcher / Manager
+- Review warranty context before pricing/repair decision
+- Review entitlement / discount applicability
+- Record approved resolution
+- Use work-order summary as context, not a substitute for full review
+- Start/connect Teams collaboration around a work order
+
+#### Frontline Technician
+- Use Copilot mobile update preview to suggest booking/task/product/service updates, then review before confirming
+- Select resolution / capture final issue resolution where configured
+
+#### Administrator
+- Configure entitlement applications
+- Configure warranty coverage
+- Configure summary fields / Copilot features
+- Configure Teams collaboration
+- Configure resolution records and incident-type mappings
+
