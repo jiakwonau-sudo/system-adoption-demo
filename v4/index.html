@@ -42,7 +42,7 @@
             <button type="button" class="mode-btn" data-mode="practice">Practice</button>
             <button type="button" class="mode-btn" data-mode="assessment">Assessment</button>
           </div>
-          <button type="button" class="icon-button" id="openCatalog" aria-label="Open workflow catalog">⌘</button>
+          <button type="button" class="library-button" id="openCatalog" aria-label="Open demo library"><span>Demo Library</span><b>⌘</b></button>
           <div class="user-chip"><span>JK</span><div><strong>Training User</strong><small id="roleLabel">Dispatcher</small></div></div>
         </div>
       </header>
@@ -56,7 +56,7 @@
           <span id="scenarioStepText">Step 1 of 8</span>
           <div class="progress-track"><i id="scenarioProgress"></i></div>
         </div>
-        <button type="button" class="secondary-btn" id="resetScenario">Reset scenario</button>
+        <div class="scenario-actions"><button type="button" class="primary-btn" id="chooseScenario">Choose demo</button><button type="button" class="secondary-btn" id="resetScenario">Reset</button></div>
       </section>
 
       <section class="coach-strip guided" id="coachStrip">
@@ -72,7 +72,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <dialog id="workflowDialog" class="workflow-dialog">
-    <div class="dialog-head"><div><span>TRAINING CATALOG</span><h2>Commercial Field Service workflows</h2></div><button type="button" id="closeCatalog" aria-label="Close">×</button></div>
+    <div class="dialog-head"><div><span>DEMO LIBRARY</span><h2>Choose a scenario or individual workflow</h2><p>Jump straight to the story you want to demonstrate.</p></div><button type="button" id="closeCatalog" aria-label="Close">×</button></div>
     <div id="workflowCatalog" class="workflow-catalog"></div>
   </dialog>
 
