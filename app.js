@@ -78,9 +78,10 @@ const workflows = {
   }
 };
 
-function inputField(label,id,value,help){return `<div class="field"><label for="${id}">${label}</label><input id="${id}" value="${value}"><div class="field-help">${help}</div></div>`}
-function textareaField(label,id,value,help){return `<div class="field full"><label for="${id}">${label}</label><textarea id="${id}">${value}</textarea><div class="field-help">${help}</div></div>`}
-function selectField(label,id,options,selected,help){return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${options.map(o=>`<option ${o===selected?'selected':''}>${o||'Select…'}</option>`).join('')}</select><div class="field-help">${help}</div></div>`}
+function isRequiredHelp(help){return !/(optional|read-only|auto-populated|recent history)/i.test(help)}
+function inputField(label,id,value,help){const req=isRequiredHelp(help);return `<div class="field"><label for="${id}">${label}</label><input id="${id}" value="${value}" data-required="${req}"><div class="field-help">${help}</div></div>`}
+function textareaField(label,id,value,help){const req=isRequiredHelp(help);return `<div class="field full"><label for="${id}">${label}</label><textarea id="${id}" data-required="${req}">${value}</textarea><div class="field-help">${help}</div></div>`}
+function selectField(label,id,options,selected,help){const req=isRequiredHelp(help);return `<div class="field"><label for="${id}">${label}</label><select id="${id}" data-required="${req}">${options.map(o=>`<option ${o===selected?'selected':''}>${o||'Select…'}</option>`).join('')}</select><div class="field-help">${help}</div></div>`}
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function current(){return workflows[state.workflow]}
@@ -110,22 +111,42 @@ function updateReadiness(){
   $('#readinessText').textContent=pct===100?'Role readiness demonstrated':`${done}/3 workflows complete`;
 }
 function applyMode(){
+  const coach=$('.coach');
+  coach.classList.remove('assessment-hidden','practice-muted');
+  const banner=$('#modeBanner');
+  banner.className='mode-banner '+state.mode;
   if(state.mode==='assessment'){
-    $('#modeHint').textContent='Assessment mode removes coaching and tests task completion.';
-    $('.coach').style.opacity=.55;
+    $('#modeHint').textContent='Assessment mode removes coaching and starts required fields blank.';
+    $('#modeBannerLabel').textContent='ASSESSMENT';
+    $('#modeBannerText').textContent='Complete this step without coaching. Required fields start blank; use the workflow context and your own judgement.';
+    coach.classList.add('assessment-hidden');
+    prepareAssessmentFields();
   }else if(state.mode==='practice'){
-    $('#modeHint').textContent='Practice mode keeps the workflow but hides step explanations.';
-    $('.coach').style.opacity=1;
+    $('#modeHint').textContent='Practice mode hides step explanations and reduces coaching.';
+    $('#modeBannerLabel').textContent='PRACTICE';
+    $('#modeBannerText').textContent='Try the workflow with less guidance. Coaching remains available, but the step-by-step explanation is hidden.';
+    coach.classList.add('practice-muted');
   }else{
-    $('#modeHint').textContent='Guided mode explains every action.'; $('.coach').style.opacity=1;
+    $('#modeHint').textContent='Guided mode explains every action.';
+    $('#modeBannerLabel').textContent='GUIDED';
+    $('#modeBannerText').textContent='Follow the workflow with explanations and coaching. Switch modes when you are ready to practise independently.';
   }
+}
+function prepareAssessmentFields(){
+  const controls=$('#workflowCanvas [data-required="true"]');
+  controls.forEach(el=>{
+    el.classList.add('assessment-input');
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  $('#workflowCanvas input[type=checkbox]').forEach(el=>{el.checked=false});
 }
 function validateStep(){
   if(state.mode!=='assessment') return true;
-  const controls=$$('#workflowCanvas input:not([type=checkbox]), #workflowCanvas select, #workflowCanvas textarea');
+  const controls=$('#workflowCanvas [data-required="true"]');
   let ok=true;
   controls.forEach(el=>{ const bad=!String(el.value).trim() || el.value==='Select…'; el.classList.toggle('field-error',bad); el.classList.toggle('field-success',!bad); if(bad)ok=false; });
-  const checks=$$('#workflowCanvas input[type=checkbox]'); checks.forEach(el=>{if(!el.checked)ok=false});
+  const checks=$('#workflowCanvas input[type=checkbox]'); checks.forEach(el=>{const bad=!el.checked; el.closest('.inline-check')?.classList.toggle('field-error',bad); if(bad)ok=false});
   return ok;
 }
 $('#nextStepBtn').addEventListener('click',()=>{
