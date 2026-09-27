@@ -46,6 +46,9 @@ const catalog={
     'Handle cancellation / overrun / urgent work',
     'Monitor booking statuses',
     'Review completed work',
+    'Review warranty / entitlement / pricing context',
+    'Use work-order summary for context when enabled',
+    'Start or review Teams collaboration on a work order',
     'Return work for follow-up',
     'Post completed work order'
   ],
@@ -61,6 +64,8 @@ const catalog={
     'Add notes / evidence / customer sign-off',
     'Update asset / barcode where configured',
     'Complete booking or flag follow-up',
+    'Use mobile Copilot work-order update when enabled (preview)',
+    'Record final resolution where configured',
     'Work offline / sync'
   ],
   'Service Manager / Back Office':[
@@ -69,6 +74,8 @@ const catalog={
     'Review customer evidence',
     'Post work order',
     'Review generated invoice',
+    'Review entitlement / NTE / warranty context',
+    'Review final resolution',
     'Review actuals, time entries and booking journals',
     'Analyse service history and repeat issues'
   ],
@@ -98,7 +105,9 @@ const catalog={
     'Build inspection templates and conditional logic',
     'Maintain resources / work hours / territories',
     'Maintain booking statuses',
-    'Maintain price lists',
+    'Maintain price lists and entitlements',
+    'Configure warranties and resolution records',
+    'Configure Teams collaboration and Copilot features',
     'Configure mobile offline profile',
     'Maintain Field Service security roles and settings'
   ]
