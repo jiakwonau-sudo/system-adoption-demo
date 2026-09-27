@@ -852,12 +852,14 @@ function postWorkOrder(){
 
 function generateAgreement(){
   state.agreementGenerated=true;
+  if(state.activeScenario==='pm')setScenarioStep(3);
   state.generatedOrders.push({id:'WO-2054',account:'Pilbara Iron Operations',asset:'PX-440 · HPU-77821',type:'Preventative Maintenance',incident:'HPU Monthly Inspection',status:'Unscheduled',priority:'Normal',territory:'Pilbara',date:'01 Oct 2026',source:'Agreement'});
   logEvent('AG','Agreement AG-0038 generated WO-2054');toast('Recurring maintenance work order generated.');render();
 }
 
 function convertIoT(){
   state.iotConverted=true;
+  if(state.activeScenario==='iot')setScenarioStep(3);
   state.generatedOrders.push({id:'WO-2055',account:'Red Ridge Processing',asset:'PX-220 · HPU-66210',type:'Repair',incident:'IoT Temperature Anomaly',status:'Unscheduled',priority:'High',territory:'Goldfields',date:'28 Sep 2026',source:'IoT'});
   logEvent('IoT','IoT alert converted to WO-2055');toast('IoT alert converted to a schedulable work order.');render();
 }
@@ -865,15 +867,186 @@ function convertIoT(){
 function transferPart(){
   const main=state.inventory['MAIN-WA'].RF220,truck=state.inventory['TRUCK-MAYA'].RF220;
   if(main.available<2){toast('Insufficient stock.');return;}
-  main.available-=2;truck.available+=2;state.transfers.push('RF-220 qty 2 · Main WA → Maya truck');state.trainingScore.inventory=Math.max(state.trainingScore.inventory,70);toast('Inventory transfer posted.');render();
+  main.available-=2;truck.available+=2;state.transfers.push('RF-220 qty 2 · Main WA → Maya truck');state.trainingScore.inventory=Math.max(state.trainingScore.inventory,70);if(state.activeScenario==='inventory')setScenarioStep(4);toast('Inventory transfer posted.');render();
+}
+
+function resetOperationalState(){
+  state.selectedOrder='WO-2048';
+  state.detailTab='summary';
+  state.mobileTab='booking';
+  state.showAssistant=false;
+  state.scenarioStep=1;
+  state.incidentApplied=false;
+  state.booking=null;
+  state.tasks=[
+    {id:'T1',name:'Confirm isolation and site safety',estimate:10,done:false},
+    {id:'T2',name:'Inspect hydraulic circuit and pressure',estimate:25,done:false},
+    {id:'T3',name:'Check return filter differential pressure',estimate:20,done:false},
+    {id:'T4',name:'Run 45-minute pressure/temperature test',estimate:45,done:false}
+  ];
+  state.product={name:'RF-220 Return Filter',sku:'RF-220',estimated:1,used:0,price:185,status:'Estimated'};
+  state.service={name:'Hydraulic Diagnostic Service',estimated:90,actual:0,pricePerHour:220,status:'Estimated'};
+  state.inspection={leak:null,filter:null,sensor:null,test:null,complete:false};
+  state.evidence={note:false,photo:false,signature:false};
+  state.time={travel:35,working:0,break:0,overtime:0};
+  state.workOrderStatus='Unscheduled';
+  state.posted=false;
+  state.invoice=null;
+  state.actuals=false;
+  state.generatedOrders=[];
+  state.agreementGenerated=false;
+  state.iotConverted=false;
+  state.inventory={
+    'MAIN-WA':{name:'Main WA Warehouse',RF220:{available:42,allocated:4,onOrder:20},TS14:{available:16,allocated:2,onOrder:10}},
+    'TRUCK-MAYA':{name:'Maya Chen · Service Ute',RF220:{available:4,allocated:1,onOrder:0},TS14:{available:2,allocated:0,onOrder:0}}
+  };
+  state.transfers=[];
+  state.rma={created:false,received:false,rtv:false};
+  state.trainingScore={dispatcher:0,technician:0,manager:0,inventory:0};
+  state.events=[
+    {time:'07:46',kind:'REQ',text:'Customer request received · pressure-loss issue'},
+    {time:'07:52',kind:'WO',text:'WO-2048 created in training scenario'}
+  ];
+}
+
+function setGuidedMode(){
+  state.mode='guided';
+  $('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='guided'));
+}
+
+function launchScenario(id){
+  const scenario=DEMO_SCENARIOS[id];
+  if(!scenario)return;
+  resetOperationalState();
+  state.activeScenario=id;
+  state.activeWorkflow=null;
+  state.role=scenario.role;
+  state.view=scenario.view;
+  if(scenario.mobileTab)state.mobileTab=scenario.mobileTab;
+
+  if(id==='scheduling'){
+    state.incidentApplied=true;
+    state.showAssistant=true;
+  }
+  if(id==='inspection'){
+    state.incidentApplied=true;
+    state.booking={id:'BRB-7741',resourceId:'R-01',resource:'Maya Chen',status:'In Progress',start:'10:00',end:'12:30',travel:18};
+    state.workOrderStatus='In Progress';
+    state.mobileTab='inspection';
+  }
+  if(id==='posting'){
+    state.incidentApplied=true;
+    state.tasks.forEach(x=>x.done=true);
+    state.inspection={leak:'No',filter:'High',sensor:'No',test:'Pass',complete:true};
+    state.product.used=1;state.product.status='Used';
+    state.service.actual=95;state.service.status='Used';
+    state.evidence={note:true,photo:true,signature:true};
+    state.booking={id:'BRB-7741',resourceId:'R-01',resource:'Maya Chen',status:'Completed',start:'10:00',end:'12:30',travel:18};
+    state.workOrderStatus='Completed';
+    state.detailTab='products';
+  }
+  setGuidedMode();
+  $('#workflowDialog').close();
+  render();
+  toast('Scenario loaded · '+scenario.name);
+}
+
+function workflowRoute(role,title){
+  const t=title.toLowerCase();
+  if(t.includes('agreement')||t.includes('recurring'))return {view:'agreements'};
+  if(t.includes('rma')||t.includes('return to warehouse')||t.includes('return to vendor')||t.includes('rtv'))return {view:'returns'};
+  if(t.includes('inventory')||t.includes('stock')||t.includes('transfer')||t.includes('purchase'))return {view:'inventory'};
+  if(t.includes('inspection template')||t.includes('conditional logic'))return {view:'inspections'};
+  if(t.includes('schedule')||t.includes('resource requirement')||t.includes('reassign')||t.includes('cancellation')||t.includes('overrun'))return {view:'schedule'};
+  if(role.startsWith('Frontline')) {
+    if(t.includes('inspection'))return {view:'mobile',mobileTab:'inspection'};
+    if(t.includes('task')||t.includes('parts')||t.includes('service')||t.includes('labor'))return {view:'mobile',mobileTab:'service'};
+    if(t.includes('note')||t.includes('evidence')||t.includes('sign-off')||t.includes('resolution'))return {view:'mobile',mobileTab:'notes'};
+    return {view:'mobile',mobileTab:'booking'};
+  }
+  if(t.includes('service history'))return {view:'assets'};
+  if(t.includes('warranty')||t.includes('entitlement')||t.includes('pricing'))return {view:'workorders',detailTab:'products'};
+  return {view:'workorders',detailTab:'summary'};
+}
+
+function roleKeyFromCatalog(role){
+  if(role.startsWith('Frontline'))return 'technician';
+  if(role.startsWith('Service Manager')||role.startsWith('Agreement'))return 'manager';
+  if(role.startsWith('Inventory'))return 'inventory';
+  return 'dispatcher';
+}
+
+function prepareWorkflowDemo(role,title,route){
+  const t=title.toLowerCase();
+  if(route.view==='schedule'){
+    state.incidentApplied=true;
+    state.showAssistant=true;
+  }
+  if(route.view==='mobile'){
+    state.incidentApplied=true;
+    state.booking={id:'BRB-7741',resourceId:'R-01',resource:'Maya Chen',status:'Scheduled',start:'10:00',end:'12:30',travel:18};
+    state.workOrderStatus='Scheduled';
+    if(t.includes('task')||t.includes('inspection')||t.includes('parts')||t.includes('service')||t.includes('labor')||t.includes('evidence')||t.includes('resolution')||t.includes('complete booking')){
+      state.booking.status='In Progress';
+      state.workOrderStatus='In Progress';
+    }
+    if(t.includes('complete booking')){
+      state.tasks.forEach(x=>x.done=true);
+      state.inspection={leak:'No',filter:'High',sensor:'No',test:'Pass',complete:true};
+      state.product.used=1;state.product.status='Used';
+      state.service.actual=95;state.service.status='Used';
+      state.evidence={note:true,photo:true,signature:true};
+      state.mobileTab='booking';
+    }
+  }
+  if(t.includes('review completed')||t.includes('post work order')||t.includes('generated invoice')||t.includes('actuals')){
+    state.incidentApplied=true;
+    state.tasks.forEach(x=>x.done=true);
+    state.inspection={leak:'No',filter:'High',sensor:'No',test:'Pass',complete:true};
+    state.product.used=1;state.product.status='Used';
+    state.service.actual=95;state.service.status='Used';
+    state.evidence={note:true,photo:true,signature:true};
+    state.booking={id:'BRB-7741',resourceId:'R-01',resource:'Maya Chen',status:'Completed',start:'10:00',end:'12:30',travel:18};
+    state.workOrderStatus='Completed';
+  }
+}
+
+function launchWorkflow(role,title){
+  resetOperationalState();
+  const route=workflowRoute(role,title);
+  state.activeScenario=null;
+  state.activeWorkflow={role,title};
+  state.role=roleKeyFromCatalog(role);
+  state.view=route.view;
+  if(route.mobileTab)state.mobileTab=route.mobileTab;
+  if(route.detailTab)state.detailTab=route.detailTab;
+  prepareWorkflowDemo(role,title,route);
+  setGuidedMode();
+  $('#workflowDialog').close();
+  render();
+  toast('Workflow demo loaded · '+title);
 }
 
 function renderCatalog(){
-  $('#workflowCatalog').innerHTML=Object.entries(catalog).map(([role,items])=>'<div class="workflow-group"><h3>'+role+'</h3><ol>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ol></div>').join('');
+  const scenarioHtml='<section class="library-section"><div class="library-section-head"><div><span>SCENARIO STORIES</span><h3>End-to-end demonstrations</h3><p>Use these when you want to show a business story across multiple Field Service roles and objects.</p></div></div><div class="scenario-library-grid">'+
+    Object.entries(DEMO_SCENARIOS).map(([id,s])=>
+      '<article class="scenario-card"><div class="scenario-card-top"><span class="scenario-label">'+s.time+'</span><span class="scenario-label">'+s.roles.length+' role'+(s.roles.length>1?'s':'')+'</span></div><h4>'+s.name+'</h4><p>'+s.summary+'</p><div class="scenario-role-row">'+s.roles.map(x=>'<span>'+x+'</span>').join('')+'</div><button type="button" class="library-launch" data-scenario="'+id+'">Open scenario</button></article>'
+    ).join('')+'</div></section>';
+
+  const workflowHtml='<section class="library-section"><div class="library-section-head"><div><span>WORKFLOW LIBRARY</span><h3>Jump directly to one workflow</h3><p>Use these for focused customer demos, practice or assessment without running the full story.</p></div></div><div class="workflow-library-grid">'+
+    Object.entries(catalog).map(([role,items])=>
+      '<div class="workflow-group"><h3>'+role+'</h3><div class="workflow-launch-list">'+items.map(x=>'<button type="button" class="workflow-launch" data-role="'+role+'" data-workflow="'+x+'"><span>'+x+'</span><b>Open</b></button>').join('')+'</div></div>'
+    ).join('')+'</div></section>';
+
+  $('#workflowCatalog').innerHTML=scenarioHtml+workflowHtml;
 }
 
 function resetScenario(){
-  location.reload();
+  if(state.activeWorkflow){
+    launchWorkflow(state.activeWorkflow.role,state.activeWorkflow.title);
+    return;
+  }
+  launchScenario(state.activeScenario||'reactive');
 }
 
 function handleClick(e){
@@ -900,9 +1073,9 @@ function handleClick(e){
   else if(action==='generate-agreement')generateAgreement();
   else if(action==='convert-iot')convertIoT();
   else if(action==='transfer-part')transferPart();
-  else if(action==='create-rma'){state.rma.created=true;toast('RMA created.');render();}
-  else if(action==='receive-rma'){state.rma.received=true;state.trainingScore.inventory=Math.max(state.trainingScore.inventory,100);toast('RMA receipt posted. Inventory journal generated.');render();}
-  else if(action==='create-rtv'){state.rma.rtv=true;toast('RTV created for supplier return.');render();}
+  else if(action==='create-rma'){state.rma.created=true;if(state.activeScenario==='returns')setScenarioStep(2);toast('RMA created.');render();}
+  else if(action==='receive-rma'){state.rma.received=true;state.trainingScore.inventory=Math.max(state.trainingScore.inventory,100);if(state.activeScenario==='returns')setScenarioStep(3);toast('RMA receipt posted. Inventory journal generated.');render();}
+  else if(action==='create-rtv'){state.rma.rtv=true;if(state.activeScenario==='returns')setScenarioStep(4);toast('RTV created for supplier return.');render();}
 }
 
 function handleChange(e){
@@ -919,7 +1092,18 @@ $('#viewRoot').addEventListener('change',handleChange);
 $('#roleSelect').addEventListener('change',e=>{state.role=e.target.value;if(state.role==='technician')state.view='mobile';else if(state.role==='inventory')state.view='inventory';else if(state.role==='manager'){if(state.workOrderStatus==='Completed')setScenarioStep(7);state.view='workorders';}else state.view='dashboard';render();});
 $$('.mode-btn').forEach(b=>b.addEventListener('click',()=>{state.mode=b.dataset.mode;$$('.mode-btn').forEach(x=>x.classList.toggle('active',x===b));updateShell();}));
 $('#resetScenario').addEventListener('click',resetScenario);
-$('#openCatalog').addEventListener('click',()=>{renderCatalog();$('#workflowDialog').showModal();});
+function openLibrary(){
+  renderCatalog();
+  $('#workflowDialog').showModal();
+}
+$('#openCatalog').addEventListener('click',openLibrary);
+$('#chooseScenario').addEventListener('click',openLibrary);
+$('#workflowCatalog').addEventListener('click',e=>{
+  const s=e.target.closest('[data-scenario]');
+  if(s){launchScenario(s.dataset.scenario);return;}
+  const w=e.target.closest('[data-workflow]');
+  if(w){launchWorkflow(w.dataset.role,w.dataset.workflow);}
+});
 $('#closeCatalog').addEventListener('click',()=>$('#workflowDialog').close());
 
 render();
