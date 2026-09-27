@@ -106,7 +106,7 @@ function renderNav(){
 }
 function updateReadiness(){
   const done=Object.values(state.completed).filter(Boolean).length; let pct=Math.round((done/3)*85)+(state.quizPassed?15:0); if(pct>100)pct=100;
-  $('#readinessScore').textContent=`${pct}%`; $('.score-ring').style.background=`conic-gradient(var(--teal) ${pct*3.6}deg,#e5e5e5 0deg)`;
+  $('#readinessScore').textContent=`${pct}%`;
   $('#readinessText').textContent=pct===100?'Role readiness demonstrated':`${done}/3 workflows complete`;
 }
 function applyMode(){
@@ -146,4 +146,17 @@ function quiz(open){$('#quizModal').classList.toggle('open',open);$('#quizBackdr
 $('#quizBtn').onclick=()=>quiz(true);$('#closeQuizBtn').onclick=()=>quiz(false);$('#quizBackdrop').onclick=()=>quiz(false);
 $('#quizForm').addEventListener('submit',e=>{e.preventDefault(); const data=new FormData(e.target); const score=[['q1','b'],['q2','a'],['q3','b']].reduce((n,[q,a])=>n+(data.get(q)===a?1:0),0); const r=$('#quizResult'); if(score===3){state.quizPassed=true;r.className='quiz-result pass';r.textContent='3/3 · PASS. Knowledge check complete. Now confirm task performance in the simulation.'}else{r.className='quiz-result fail';r.textContent=`${score}/3 · Review the workflow guidance and try again.`} updateReadiness();});
 
+
+function setLabFullscreen(open){
+  const stage=document.querySelector('#labStage');
+  if(!stage) return;
+  stage.classList.toggle('fullscreen',open);
+  document.body.classList.toggle('lab-active',open);
+  if(open) stage.scrollTop=0;
+}
+document.querySelector('#enterLabBtn')?.addEventListener('click',()=>setLabFullscreen(true));
+document.querySelector('#enterLabHeroBtn')?.addEventListener('click',()=>{document.querySelector('#lab')?.scrollIntoView({behavior:'smooth'});setTimeout(()=>setLabFullscreen(true),420);});
+document.querySelector('#exitLabBtn')?.addEventListener('click',()=>setLabFullscreen(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setLabFullscreen(false)});
+document.querySelector('#openPackBtn2')?.addEventListener('click',()=>drawer(true));
 render();
