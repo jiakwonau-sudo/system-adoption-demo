@@ -421,11 +421,15 @@ function tasksTab(){
 function productsTab(){
   if(!state.incidentApplied)return missingIncident();
   const serviceValue=(state.service.actual/60*state.service.pricePerHour).toFixed(2);
+  const invoiceHtml=state.invoice
+    ? '<div class="callout" style="margin-top:16px"><strong>Posted invoice '+state.invoice.id+'</strong>Service $'+state.invoice.service.toFixed(2)+' · Product $'+state.invoice.product.toFixed(2)+' · Travel $'+state.invoice.travel.toFixed(2)+' · Total $'+state.invoice.total.toFixed(2)+' · Actuals: '+(state.actuals?'Created':'Pending')+'</div>'
+    : '';
   return '<div class="fact-grid">'+fact('ESTIMATE SUBTOTAL','$'+(state.product.price+(state.service.estimated/60*state.service.pricePerHour)).toFixed(2))+fact('ACTUAL SUBTOTAL','$'+((state.product.used*state.product.price)+Number(serviceValue)).toFixed(2))+fact('PRICE LIST','WA Industrial Service 2026')+'</div>'+
     '<div class="card-head" style="margin-top:16px"><div><span>PRODUCT</span><h2>'+state.product.name+'</h2></div><span class="status '+(state.product.used?'completed':'unscheduled')+'">'+state.product.status+'</span></div>'+
     '<div class="fact-grid">'+fact('EST. QTY',state.product.estimated)+fact('USED QTY',state.product.used)+fact('UNIT PRICE','$'+state.product.price)+'</div>'+
     '<div class="card-head" style="margin-top:16px"><div><span>SERVICE</span><h2>'+state.service.name+'</h2></div><span class="status '+(state.service.actual?'completed':'unscheduled')+'">'+state.service.status+'</span></div>'+
-    '<div class="fact-grid">'+fact('EST. DURATION',state.service.estimated+' min')+fact('ACTUAL',state.service.actual+' min')+fact('RATE','$'+state.service.pricePerHour+'/hr')+'</div>';
+    '<div class="fact-grid">'+fact('EST. DURATION',state.service.estimated+' min')+fact('ACTUAL',state.service.actual+' min')+fact('RATE','$'+state.service.pricePerHour+'/hr')+'</div>'+
+    invoiceHtml;
 }
 
 function assetsTab(){
