@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="System Adoption OS flagship demo: observe real work, build a work graph, generate a Training Twin, prove readiness." />
+  <title>System Adoption OS · Flagship Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">FLAGSHIP V3 · SYSTEM ADOPTION OS</div>
+        <h1>Watch real work.<br><span>Turn it into readiness.</span></h1>
+        <p class="hero-sub">An AI-native layer between enterprise software and the people expected to use it correctly.</p>
+      </div>
+      <div class="north-star">
+        <span>NORTH STAR</span>
+        <strong>Can this person perform this task independently?</strong>
+      </div>
+    </header>
+
+    <section class="flow-strip" aria-label="System Adoption OS flow">
+      <div><b>01</b><span>CONNECT</span></div><i>→</i><div><b>02</b><span>OBSERVE</span></div><i>→</i><div><b>03</b><span>MODEL</span></div><i>→</i><div><b>04</b><span>TWIN</span></div><i>→</i><div><b>05</b><span>PROVE</span></div><i>→</i><div><b>06</b><span>KEEP ALIVE</span></div>
+    </section>
+
+    <section class="stage-grid">
+      <article class="stage live-stage">
+        <div class="stage-head"><div><span class="stage-kicker">LIVE BUSINESS SYSTEM</span><h2>FieldServe 360</h2><p>Fictional client sandbox · Service Coordinator</p></div><span class="status-pill idle" id="captureStatus">NOT CAPTURING</span></div>
+        <div class="browser-frame">
+          <div class="browser-top"><span></span><span></span><span></span><div>client-uat.example / field-service</div></div>
+          <div class="system-layout">
+            <aside class="mini-nav"><b>FS</b><span class="active">Jobs</span><span>Customers</span><span>Assets</span><span>Schedule</span></aside>
+            <div class="system-main">
+              <div class="system-title-row"><div><small>WORK ORDER</small><h3>Create service job</h3></div><span class="role-chip">Service Coordinator</span></div>
+              <div class="field-block" data-step="customer"><label>Customer</label><button type="button" class="field-button" data-value="Pilbara Iron Operations">Pilbara Iron Operations</button></div>
+              <div class="field-block" data-step="asset"><label>Asset</label><button type="button" class="field-button" data-value="PX-440 · HPU-77821">PX-440 · HPU-77821</button></div>
+              <div class="field-block" data-step="issue"><label>Reported issue</label><button type="button" class="field-button tall" data-value="Pressure drops after 20 min; oil-temp alarm twice">Pressure drops after 20 min; oil-temp alarm twice</button></div>
+              <div class="field-block" data-step="priority"><label>Priority</label><button type="button" class="field-button" data-value="High · same-day response">High · same-day response</button></div>
+              <button type="button" class="submit-job" id="submitJob" disabled>Create work order</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage-actions"><button type="button" class="primary" id="startCapture">Start workflow capture</button><button type="button" class="secondary" id="resetAll">Reset</button></div>
+        <p class="stage-note">You are not giving us a database. We observe approved browser actions and synthetic data inside an authorised session.</p>
+      </article>
+
+      <article class="stage graph-stage">
+        <div class="stage-head"><div><span class="stage-kicker">AI WORK GRAPH</span><h2>We reconstruct the job</h2><p>Clicks become role, decisions, rules and outcomes.</p></div><span class="status-pill" id="graphStatus">WAITING</span></div>
+        <div class="graph-canvas" id="graphCanvas" aria-live="polite"><div class="graph-empty" id="graphEmpty"><span>◎</span><strong>No workflow captured yet</strong><p>Start on the left and perform the task once.</p></div></div>
+        <div class="inference-card" id="inferenceCard" hidden><div class="mini-label">AI INFERENCE</div><div class="inference-grid"><div><span>ROLE</span><strong>Service Coordinator</strong></div><div><span>OUTCOME</span><strong>Dispatch-ready work order</strong></div><div><span>PREFERRED PATH</span><strong>Customer → Asset → Issue → Priority → Create</strong></div><div><span>EXCEPTION</span><strong>Asset missing → stop and verify site/asset record</strong></div></div></div>
+        <button type="button" class="primary wide" id="buildTwin" disabled>Generate Training Twin</button>
+      </article>
+
+      <article class="stage twin-stage">
+        <div class="stage-head"><div><span class="stage-kicker">TRAINING TWIN</span><h2>Safe practice, separate from production</h2><p>Generated from the validated workflow model.</p></div><span class="status-pill" id="twinStatus">NOT BUILT</span></div>
+        <div class="twin-placeholder" id="twinPlaceholder"><div class="twin-orbit">✦</div><strong>Your Training Twin will appear here</strong><p>Capture the real workflow and build the preferred path first.</p></div>
+        <div class="twin-app" id="twinApp" hidden><div class="mode-tabs" role="tablist" aria-label="Training mode"><button type="button" class="mode-tab active" data-mode="guided">Guided</button><button type="button" class="mode-tab" data-mode="practice">Practice</button><button type="button" class="mode-tab" data-mode="assessment">Assessment</button></div><div class="twin-content" id="twinContent"></div></div>
+      </article>
+    </section>
+
+    <section class="control-deck">
+      <div class="readiness-card"><div class="readiness-top"><div><span class="mini-label">ROLE READINESS</span><strong id="readinessScore">Not measured</strong></div><div class="readiness-ring" id="readinessRing"><span id="readinessRingText">—</span></div></div><p id="readinessCopy">Generate the Training Twin, then complete Assessment.</p></div>
+      <div class="change-watch"><div><span class="mini-label">CHANGE WATCH</span><strong>What happens after the system changes?</strong><p>Simulate a UI/process change and watch the OS identify affected learning assets.</p></div><button type="button" class="secondary" id="simulateChange" disabled>Simulate system change</button></div>
+    </section>
+
+    <section class="impact-panel" id="impactPanel" hidden>
+      <div class="impact-head"><div><span class="stage-kicker">CHANGE IMPACT DETECTED</span><h2>Priority was renamed to Severity</h2><p>The workflow still works, but four downstream learning assets are now stale.</p></div><button type="button" class="primary" id="regenerateAssets">Regenerate affected assets</button></div>
+      <div class="impact-grid"><div><span>01</span><strong>Training Twin</strong><small>Field label + hint text</small></div><div><span>02</span><strong>Quick Guide</strong><small>Step 4 reference</small></div><div><span>03</span><strong>User Guide</strong><small>Workflow section 2.4</small></div><div><span>04</span><strong>Assessment</strong><small>Decision prompt</small></div></div>
+      <div class="regen-result" id="regenResult" hidden>✓ All affected assets regenerated from the same workflow model.</div>
+    </section>
+
+    <footer><div><strong>SYSTEM ADOPTION OS</strong><span>Software changes. People need a path that stays alive.</span></div><div class="footer-line">CONNECT · OBSERVE · MODEL · TWIN · PROVE · KEEP ALIVE</div></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
