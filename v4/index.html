@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Commercial-quality Dynamics 365 Field Service workflow training twin benchmark demo. Original UI, Microsoft-documented workflow semantics.">
+  <title>Field Service Training Twin · Commercial V4</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">SA</div>
+        <div><strong>System Adoption</strong><span>Field Service Training Twin</span></div>
+      </div>
+      <div class="sandbox-badge">TRAINING TWIN · SYNTHETIC DATA</div>
+      <nav id="mainNav" aria-label="Main navigation"></nav>
+      <div class="sidebar-foot">
+        <div class="role-block">
+          <span>ACTIVE ROLE</span>
+          <select id="roleSelect" aria-label="Active role">
+            <option value="dispatcher">Dispatcher</option>
+            <option value="technician">Frontline Technician</option>
+            <option value="manager">Service Manager</option>
+            <option value="inventory">Inventory Manager</option>
+          </select>
+        </div>
+        <a href="../" class="back-link">← Flagship OS demo</a>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="page-title">
+          <span id="pageEyebrow">OPERATIONS</span>
+          <h1 id="pageTitle">Field Service Operations</h1>
+        </div>
+        <div class="top-actions">
+          <div class="mode-switch" role="group" aria-label="Training mode">
+            <button type="button" class="mode-btn active" data-mode="guided">Guided</button>
+            <button type="button" class="mode-btn" data-mode="practice">Practice</button>
+            <button type="button" class="mode-btn" data-mode="assessment">Assessment</button>
+          </div>
+          <button type="button" class="icon-button" id="openCatalog" aria-label="Open workflow catalog">⌘</button>
+          <div class="user-chip"><span>JK</span><div><strong>Training User</strong><small id="roleLabel">Dispatcher</small></div></div>
+        </div>
+      </header>
+
+      <section class="scenario-bar">
+        <div>
+          <span>ACTIVE SCENARIO</span>
+          <strong id="scenarioName">Reactive Break/Fix · Hydraulic Power Unit</strong>
+        </div>
+        <div class="scenario-progress">
+          <span id="scenarioStepText">Step 1 of 8</span>
+          <div class="progress-track"><i id="scenarioProgress"></i></div>
+        </div>
+        <button type="button" class="secondary-btn" id="resetScenario">Reset scenario</button>
+      </section>
+
+      <section class="coach-strip guided" id="coachStrip">
+        <div class="coach-icon">i</div>
+        <div><span id="coachMode">GUIDED MODE</span><strong id="coachTitle">Start with a dispatch-ready work order.</strong><p id="coachText">Open WO-2048 and review the customer, serialized asset, incident type and required response.</p></div>
+        <div class="readiness-mini"><span>ROLE READINESS</span><strong id="readinessMini">0%</strong></div>
+      </section>
+
+      <div id="viewRoot" class="view-root" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="workflowDialog" class="workflow-dialog">
+    <div class="dialog-head"><div><span>TRAINING CATALOG</span><h2>Commercial Field Service workflows</h2></div><button type="button" id="closeCatalog" aria-label="Close">×</button></div>
+    <div id="workflowCatalog" class="workflow-catalog"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
