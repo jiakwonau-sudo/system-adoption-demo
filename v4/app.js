@@ -445,7 +445,7 @@ function applyIncident(){
   state.product.status='Estimated';
   state.service.status='Estimated';
   logEvent('IT','Incident type applied · tasks/products/services/characteristics generated');
-  setScenarioStep(2);
+  setScenarioStep(3);
   toast('Incident type applied. Work order detail has been standardised.');
   render();
 }
@@ -495,7 +495,7 @@ function bookResource(resourceId){
   state.workOrderStatus='Scheduled';
   state.showAssistant=false;
   logEvent('BK','Booking created · '+r.name+' · 10:00–12:30');
-  setScenarioStep(3);
+  setScenarioStep(4);
   state.trainingScore.dispatcher=100;
   toast(r.name+' booked to WO-2048.');
   render();
@@ -567,12 +567,12 @@ function changeBookingStatus(status){
   if(status==='Traveling'){
     state.booking.status='Traveling';state.time.travel=35;state.workOrderStatus='Scheduled';logEvent('TS','Booking status Traveling · timestamp created');setScenarioStep(4);
   }else if(status==='In Progress'){
-    state.booking.status='In Progress';state.workOrderStatus='In Progress';logEvent('TS','Booking status In Progress · Actual Arrival / Started On captured');setScenarioStep(4);
+    state.booking.status='In Progress';state.workOrderStatus='In Progress';logEvent('TS','Booking status In Progress · Actual Arrival / Started On captured');setScenarioStep(5);
   }else if(status==='On Break'){
     state.booking.status='On Break';state.time.break=15;logEvent('TS','Booking status On Break · break timestamp');
   }else if(status==='Completed'){
     if(!canCompleteBooking()){toast('Complete tasks, inspection, used part, service time, note and customer sign-off first.');return;}
-    state.booking.status='Completed';state.workOrderStatus='Completed';state.time.working=95;state.service.status='Used';state.product.status='Used';logEvent('TS','Booking Completed · time entries and booking journals generated');setScenarioStep(6);state.trainingScore.technician=100;
+    state.booking.status='Completed';state.workOrderStatus='Completed';state.time.working=95;state.service.status='Used';state.product.status='Used';logEvent('TS','Booking Completed · time entries and booking journals generated');setScenarioStep(7);state.trainingScore.technician=100;
   }
   render();
 }
@@ -674,7 +674,7 @@ function applyBookingStatusAction(action,value){
 function completeInspection(){
   if(!inspectionReady())return;
   if(state.inspection.test!=='Pass'){toast('Inspection failed. Create follow-up work rather than completing this booking.');return;}
-  state.inspection.complete=true;logEvent('IN','Hydraulic inspection completed · Pass');toast('Inspection completed.');
+  state.inspection.complete=true;logEvent('IN','Hydraulic inspection completed · Pass');setScenarioStep(5);toast('Inspection completed.');
   render();
 }
 
@@ -682,13 +682,13 @@ function usePart(){
   if(state.product.used)return;
   state.product.used=1;state.product.status='Used';
   state.inventory['TRUCK-MAYA'].RF220.available=Math.max(0,state.inventory['TRUCK-MAYA'].RF220.available-1);
-  logEvent('IV','RF-220 qty 1 marked Used · truck inventory reduced');
+  logEvent('IV','RF-220 qty 1 marked Used · truck inventory reduced');setScenarioStep(5);
   toast('RF-220 marked Used. Truck inventory updated.');
   render();
 }
 
 function recordService(){
-  state.service.actual=95;state.service.status='Used';logEvent('SV','Hydraulic Diagnostic Service · 95 min recorded');toast('Service duration recorded.');render();
+  state.service.actual=95;state.service.status='Used';logEvent('SV','Hydraulic Diagnostic Service · 95 min recorded');setScenarioStep(5);toast('Service duration recorded.');render();
 }
 
 function postWorkOrder(){
@@ -747,9 +747,9 @@ function handleClick(e){
   else if(action==='complete-inspection')completeInspection();
   else if(action==='use-part')usePart();
   else if(action==='record-service')recordService();
-  else if(action==='add-note'){state.evidence.note=true;logEvent('NT','Technician service note added');toast('Technician note saved.');render();}
-  else if(action==='add-photo'){state.evidence.photo=true;logEvent('PH','2 field photos attached');toast('Photo evidence attached.');render();}
-  else if(action==='sign-off'){state.evidence.signature=true;logEvent('SG','Customer signature captured · Alicia Morgan');toast('Customer sign-off captured.');render();}
+  else if(action==='add-note'){state.evidence.note=true;setScenarioStep(5);logEvent('NT','Technician service note added');toast('Technician note saved.');render();}
+  else if(action==='add-photo'){state.evidence.photo=true;setScenarioStep(5);logEvent('PH','2 field photos attached');toast('Photo evidence attached.');render();}
+  else if(action==='sign-off'){state.evidence.signature=true;setScenarioStep(5);logEvent('SG','Customer signature captured · Alicia Morgan');toast('Customer sign-off captured.');render();}
   else if(action==='post-work-order')postWorkOrder();
   else if(action==='generate-agreement')generateAgreement();
   else if(action==='convert-iot')convertIoT();
@@ -761,7 +761,7 @@ function handleClick(e){
 
 function handleChange(e){
   if(e.target.matches('[data-task]')){
-    const task=state.tasks.find(x=>x.id===e.target.dataset.task);if(task){task.done=e.target.checked;if(task.done)logEvent('TK','Task completed · '+task.name);render();}
+    const task=state.tasks.find(x=>x.id===e.target.dataset.task);if(task){task.done=e.target.checked;if(task.done){logEvent('TK','Task completed · '+task.name);setScenarioStep(5);}render();}
   }
 }
 
@@ -770,7 +770,7 @@ $('#mainNav').addEventListener('click',e=>{
 });
 $('#viewRoot').addEventListener('click',handleClick);
 $('#viewRoot').addEventListener('change',handleChange);
-$('#roleSelect').addEventListener('change',e=>{state.role=e.target.value;if(state.role==='technician')state.view='mobile';else if(state.role==='inventory')state.view='inventory';else state.view='dashboard';render();});
+$('#roleSelect').addEventListener('change',e=>{state.role=e.target.value;if(state.role==='technician')state.view='mobile';else if(state.role==='inventory')state.view='inventory';else if(state.role==='manager'){if(state.workOrderStatus==='Completed')setScenarioStep(7);state.view='workorders';}else state.view='dashboard';render();});
 $$('.mode-btn').forEach(b=>b.addEventListener('click',()=>{state.mode=b.dataset.mode;$$('.mode-btn').forEach(x=>x.classList.toggle('active',x===b));updateShell();}));
 $('#resetScenario').addEventListener('click',resetScenario);
 $('#openCatalog').addEventListener('click',()=>{renderCatalog();$('#workflowDialog').showModal();});
