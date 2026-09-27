@@ -19,3 +19,18 @@ The marketing/showroom **Shell** and the interactive **Live Training Lab** are d
 
 ## Deployment
 Static HTML/CSS/JS for GitHub Pages.
+
+## V3 Flagship Prototype
+
+**System Adoption OS** prototype showing the intended magic moment:
+
+1. Observe an approved browser workflow
+2. Convert actions into a Work Graph / Preferred Path
+3. Generate a separate Training Twin
+4. Run Guided / Practice / Assessment
+5. Measure role readiness
+6. Simulate system change and identify stale learning assets
+
+V3 uses a **fictional client sandbox and synthetic data**. It is a product-vision prototype, not proof of live customer-system capture yet.
+
+Live prototype: https://jiakwonau-sudo.github.io/system-adoption-demo/v3/
