@@ -34,6 +34,129 @@ const roleNames={
   inventory:'Inventory Manager'
 };
 
+const DEMO_SCENARIOS={
+  reactive:{
+    name:'Reactive Break/Fix · Hydraulic Power Unit',
+    summary:'Full end-to-end service lifecycle from work order through invoice.',
+    roles:['Dispatcher','Technician','Service Manager'],
+    time:'7–10 min',
+    role:'dispatcher',view:'workorders',
+    steps:[
+      ['Review dispatch-ready work order','Review customer, site, serialized asset, priority and service context.'],
+      ['Apply incident type','Generate standard tasks, product, service and required characteristic.'],
+      ['Schedule the right resource','Use Schedule Assistant to match skill, territory, availability and travel.'],
+      ['Travel and start work','Switch to Technician and move Scheduled → Traveling → In Progress.'],
+      ['Execute field work','Complete tasks, inspection, used part, labor and evidence.'],
+      ['Complete the booking','Complete only when required field work and evidence are captured.'],
+      ['Review and post','Service Manager validates commercial data and posts the work order.'],
+      ['Confirm business outcome','Review invoice, actuals, asset history and readiness evidence.']
+    ]
+  },
+  pm:{
+    name:'Preventative Maintenance Agreement',
+    summary:'Generate recurring maintenance demand from an agreement and service template.',
+    roles:['Service Manager','Dispatcher'],
+    time:'3–5 min',
+    role:'manager',view:'agreements',
+    steps:[
+      ['Review the agreement','Confirm customer, asset, cadence, incident type and preferred resource.'],
+      ['Review booking setup','Confirm recurring work-order generation and scheduling behavior.'],
+      ['Generate next recurrence','Create the next preventative-maintenance work order.'],
+      ['Hand demand to scheduling','Open the generated work order and prepare it for dispatch.']
+    ]
+  },
+  iot:{
+    name:'IoT Predictive Maintenance',
+    summary:'Turn an equipment telemetry anomaly into schedulable service demand.',
+    roles:['Dispatcher','Technician'],
+    time:'3–5 min',
+    role:'dispatcher',view:'iot',
+    steps:[
+      ['Review IoT alert','Confirm device, asset, signal, threshold and duration.'],
+      ['Validate service context','Check the alert is actionable and not a duplicate/false positive.'],
+      ['Convert to work order','Create service demand with asset and incident context.'],
+      ['Schedule response','Hand the generated work order to scheduling.']
+    ]
+  },
+  scheduling:{
+    name:'Qualified Resource Scheduling',
+    summary:'Match a high-priority requirement to the right resource using skill, territory and travel.',
+    roles:['Dispatcher'],
+    time:'3–4 min',
+    role:'dispatcher',view:'schedule',
+    steps:[
+      ['Review requirement','Confirm duration, priority, territory and Hydraulics L3 characteristic.'],
+      ['Find availability','Use Schedule Assistant to compare qualified resources.'],
+      ['Reject weak matches','Avoid expired induction or wrong skill despite proximity.'],
+      ['Book preferred resource','Create the booking and protect the promised response window.']
+    ]
+  },
+  inspection:{
+    name:'Inspection Exception & Recovery',
+    summary:'Use conditional inspection logic and respond correctly when an exception appears.',
+    roles:['Technician'],
+    time:'4–6 min',
+    role:'technician',view:'mobile',mobileTab:'inspection',
+    steps:[
+      ['Start field inspection','Work from the assigned booking in In Progress status.'],
+      ['Trigger a branch','A High return-filter reading reveals the temperature-sensor question.'],
+      ['Complete required evidence','Answer all required branch questions and run-test result.'],
+      ['Decide completion vs follow-up','Pass can complete; Fail should generate follow-up work.']
+    ]
+  },
+  inventory:{
+    name:'Truck Stock Replenishment',
+    summary:'Review warehouse availability and transfer service stock to a technician vehicle.',
+    roles:['Inventory Manager'],
+    time:'2–4 min',
+    role:'inventory',view:'inventory',
+    steps:[
+      ['Review stock position','Compare Main WA and technician-truck quantities.'],
+      ['Identify replenishment need','Check available, allocated, on-hand and on-order quantities.'],
+      ['Transfer stock','Move RF-220 filters from Main WA to Maya truck.'],
+      ['Verify movement','Confirm destination stock and movement journal.']
+    ]
+  },
+  returns:{
+    name:'RMA / RTV Return',
+    summary:'Process a defective service component through receipt and vendor return.',
+    roles:['Inventory Manager'],
+    time:'3–5 min',
+    role:'inventory',view:'returns',
+    steps:[
+      ['Create RMA','Identify product, work-order context and processing action.'],
+      ['Receive returned item','Confirm quantity and receipt into the return process.'],
+      ['Create RTV','Route defective product to the supplier.'],
+      ['Verify return state','Confirm the reverse-logistics trail is complete.']
+    ]
+  },
+  posting:{
+    name:'Back Office Completion & Posting',
+    summary:'Review completed field work, then post billing and actuals.',
+    roles:['Service Manager'],
+    time:'3–4 min',
+    role:'manager',view:'workorders',
+    steps:[
+      ['Review completed work','Validate tasks, inspection, used part, labor and customer evidence.'],
+      ['Review commercial context','Check price list, quantities, durations and service outcome.'],
+      ['Post work order','Move Completed → Posted only after validation.'],
+      ['Confirm invoice and actuals','Review generated invoice and operational/financial records.']
+    ]
+  },
+  assets:{
+    name:'Customer Asset & Service History',
+    summary:'Trace functional location, asset hierarchy and prior service evidence before work begins.',
+    roles:['Dispatcher','Technician','Service Manager'],
+    time:'2–3 min',
+    role:'dispatcher',view:'assets',
+    steps:[
+      ['Open customer context','Confirm service account and functional location.'],
+      ['Locate serialized asset','Navigate plant → area → bay → HPU asset.'],
+      ['Review service history','Use prior PM, inspection and IoT history to inform the task.']
+    ]
+  }
+};
+
 const catalog={
   'Dispatcher / Service Coordinator':[
     'Create reactive work order',
@@ -134,6 +257,8 @@ const state={
   detailTab:'summary',
   mobileTab:'booking',
   showAssistant:false,
+  activeScenario:'reactive',
+  activeWorkflow:null,
   scenarioStep:1,
   incidentApplied:false,
   booking:null,
@@ -169,16 +294,6 @@ const state={
   ]
 };
 
-const scenarioSteps=[
-  ['Review dispatch-ready work order','Open WO-2048 and review customer, asset, priority and service context.'],
-  ['Apply incident type','Use the Hydraulic Pressure Diagnostic incident template to generate tasks, part, service and required skill.'],
-  ['Schedule the right resource','Use Schedule Assistant to select a resource matching Hydraulics L3, territory and availability.'],
-  ['Travel and start work','Switch to technician role, set Traveling, then In Progress.'],
-  ['Execute field work','Complete tasks, inspection, used part, service time and field evidence.'],
-  ['Complete the booking','Complete only after required work and evidence are captured.'],
-  ['Review and post','Service Manager reviews billing/time/evidence and posts the completed work order.'],
-  ['Confirm business outcome','Review invoice, actuals, service history and readiness evidence.']
-];
 
 function statusClass(status){
   const x=status.toLowerCase();
@@ -200,8 +315,23 @@ function logEvent(kind,text){
   state.events.unshift({time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),kind,text});
 }
 
+function getActivePlan(){
+  if(state.activeWorkflow){
+    return {
+      name:'Workflow Demo · '+state.activeWorkflow.title,
+      steps:[
+        ['Orient to the workflow','Understand the business outcome, role and starting state.'],
+        ['Perform the workflow','Use the operational screen and complete the preferred path.'],
+        ['Verify the outcome','Confirm the end state and what evidence proves readiness.']
+      ]
+    };
+  }
+  return DEMO_SCENARIOS[state.activeScenario]||DEMO_SCENARIOS.reactive;
+}
+
 function setScenarioStep(n){
-  state.scenarioStep=Math.max(state.scenarioStep,n);
+  const plan=getActivePlan();
+  state.scenarioStep=Math.min(plan.steps.length,Math.max(state.scenarioStep,n));
   updateShell();
 }
 
@@ -234,9 +364,12 @@ function calcReadiness(role=state.role){
 function updateShell(){
   $('#roleLabel').textContent=roleNames[state.role];
   $('#roleSelect').value=state.role;
-  const [title,text]=scenarioSteps[state.scenarioStep-1]||scenarioSteps[scenarioSteps.length-1];
-  $('#scenarioStepText').textContent='Step '+state.scenarioStep+' of '+scenarioSteps.length;
-  $('#scenarioProgress').style.width=(state.scenarioStep/scenarioSteps.length*100)+'%';
+  const plan=getActivePlan();
+  const steps=plan.steps;
+  const [title,text]=steps[state.scenarioStep-1]||steps[steps.length-1];
+  $('#scenarioName').textContent=plan.name;
+  $('#scenarioStepText').textContent='Step '+state.scenarioStep+' of '+steps.length;
+  $('#scenarioProgress').style.width=(state.scenarioStep/steps.length*100)+'%';
   const score=calcReadiness();
   $('#readinessMini').textContent=score+'%';
   const coach=$('#coachStrip');
