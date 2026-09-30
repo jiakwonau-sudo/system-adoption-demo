@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f0e9" />
+  <title>사란 · 프롬프트 비교실</title>
+  <style>
+    :root{
+      --paper:#f6f1ea;--paper2:#efe7dd;--ink:#1d1b19;--muted:#736c64;--line:#d8cfc4;
+      --card:#fffdf9;--accent:#5d4637;--accent2:#b86750;--green:#54695c;--shadow:0 12px 30px rgba(54,42,34,.08);
+      --mono:"Courier New",Courier,monospace;--sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#f8f4ee 0,#f5efe7 100%);color:var(--ink);font-family:var(--sans);min-height:100vh}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:1460px;margin:0 auto;display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+    .sidebar{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:28px 20px;background:rgba(247,242,235,.92);backdrop-filter:blur(14px);overflow:auto}
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:28px}.mark{width:34px;height:34px;border-radius:12px;background:#241e1a;color:#fff;display:grid;place-items:center;font-weight:800}.brand h1{font-size:16px;margin:0}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px;font-family:var(--mono);letter-spacing:.06em}
+    .search{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fffaf4;outline:none}.search:focus{border-color:#93735e;box-shadow:0 0 0 3px rgba(147,115,94,.12)}
+    .side-label{font:700 10px/1 var(--mono);letter-spacing:.12em;color:#8d8278;margin:26px 0 10px;text-transform:uppercase}
+    .scene-list{display:grid;gap:8px}.scene-btn{width:100%;text-align:left;border:1px solid transparent;border-radius:14px;padding:12px;background:transparent;color:var(--ink)}.scene-btn:hover{background:#f0e8df}.scene-btn.active{background:#fffdf9;border-color:#d9cec1;box-shadow:0 8px 20px rgba(53,39,30,.06)}.scene-no{font:700 10px var(--mono);color:#a07562}.scene-title{font-weight:700;margin-top:4px}.scene-meta{font-size:11px;color:var(--muted);margin-top:4px}
+    .sidebar-foot{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.55}
+    main{padding:34px 42px 80px;min-width:0}
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:24px}.eyebrow{font:700 11px var(--mono);letter-spacing:.14em;color:#9a7562}.title{font-family:Georgia,"Noto Serif KR",serif;font-size:36px;line-height:1.15;margin:8px 0 7px;font-weight:700;letter-spacing:-.03em}.subtitle{color:var(--muted);font-size:14px;margin:0}.scope{display:flex;gap:6px;border:1px solid var(--line);background:#f0e9e1;padding:4px;border-radius:999px}.scope button{border:0;background:transparent;padding:8px 12px;border-radius:999px;font-size:12px;color:var(--muted)}.scope button.active{background:#fffdf9;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 30px}.stat{background:rgba(255,253,249,.72);border:1px solid var(--line);border-radius:16px;padding:15px 16px}.stat b{display:block;font:700 20px var(--mono)}.stat span{font-size:11px;color:var(--muted)}
+    .section{margin-top:28px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}.section-head h2{font-family:Georgia,"Noto Serif KR",serif;font-size:22px;margin:0}.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.ghost{border:1px solid var(--line);background:#fffaf4;border-radius:10px;padding:9px 12px;font-size:12px}.ghost:hover{background:#fff}
+    .attempts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.attempt{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px;box-shadow:0 8px 18px rgba(54,42,34,.04);position:relative}.attempt.selA{outline:2px solid #755440;outline-offset:-2px}.attempt.selB{outline:2px solid #7a6a54;outline-offset:-2px}.thumb{aspect-ratio:16/9;border-radius:13px;background:linear-gradient(135deg,#d6b7a0,#8e6655 45%,#352b28);overflow:hidden;position:relative;display:grid;place-items:center;color:white}.thumb:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 68% 28%,rgba(255,255,255,.35),transparent 25%),linear-gradient(0deg,rgba(0,0,0,.25),transparent 60%)}.thumb .play{z-index:1;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.7);background:rgba(0,0,0,.16);backdrop-filter:blur(4px);font-size:18px}.attempt-row{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.attempt-title{font-weight:700;font-size:13px}.attempt-time{color:var(--muted);font:11px var(--mono)}.attempt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.tag{font:10px var(--mono);border:1px solid var(--line);border-radius:999px;padding:5px 7px;color:#6f6258;background:#fbf6f0}.selects{display:flex;gap:6px;margin-top:12px}.pick{flex:1;border:1px solid var(--line);background:#f7f0e8;border-radius:10px;padding:8px;font:700 11px var(--mono)}.pick.active{background:#2a2421;color:#fff;border-color:#2a2421}
+    .compare{margin-top:34px;border:1px solid #cfc2b6;background:#fffdf9;border-radius:24px;padding:18px;box-shadow:var(--shadow)}.compare-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.compare-title{font-family:Georgia,"Noto Serif KR",serif;font-size:24px}.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.viewer{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#1d1917}.viewer-head{display:flex;align-items:center;justify-content:space-between;color:#fff;padding:10px 12px;background:#2d2723;font-size:12px}.viewer-video{aspect-ratio:16/9;background:radial-gradient(circle at 62% 31%,#c7a78f 0 9%,transparent 10%),linear-gradient(125deg,#8e7a6b,#2c2724 70%);display:grid;place-items:center;color:#fff}.viewer-video button{width:64px;height:64px;border-radius:50%;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.1);color:#fff;font-size:22px}.compare-controls{display:flex;justify-content:center;gap:8px;margin-top:12px}.compare-controls button{border:1px solid var(--line);background:#f7f0e9;border-radius:11px;padding:9px 12px;font-size:12px}
+    .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:24px}.tab{border:0;background:transparent;padding:11px 14px;font-size:12px;color:var(--muted);border-bottom:2px solid transparent}.tab.active{color:var(--ink);border-bottom-color:#5e493c;font-weight:700}.panel{padding-top:16px}.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.prompt-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbf7f1}.prompt-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.prompt-head strong{font:700 12px var(--mono)}.copy{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px;font:11px var(--mono)}.prompt{white-space:pre-wrap;font:12px/1.65 var(--mono);color:#403a35}.del{background:#f3d8d3;text-decoration:line-through}.add{background:#dce8dd}.settings{display:none;grid-template-columns:repeat(3,1fr);gap:10px}.settings.active{display:grid}.setting{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbf7f1}.setting dt{font:700 10px var(--mono);color:#8b776a}.setting dd{margin:6px 0 0;font-size:13px}
+    .full-prompt{display:none;margin-top:12px;border:1px dashed #cbbcaf;background:#f7efe6;border-radius:14px;padding:14px;font:12px/1.7 var(--mono);white-space:pre-wrap}.full-prompt.show{display:block}
+    .mobilebar{display:none}
+    @media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobilebar{display:flex;position:sticky;top:0;z-index:9;background:rgba(247,242,235,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 14px;justify-content:space-between;align-items:center}.mobilebar b{font-size:14px}.mobilebar button{border:1px solid var(--line);background:#fffaf4;border-radius:10px;padding:8px 10px}.mobile-scenes{display:none;padding:10px 14px;background:#f5eee6;border-bottom:1px solid var(--line)}.mobile-scenes.show{display:block}.mobile-scenes select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff}main{padding:24px 16px 70px}.title{font-size:30px}.stats{grid-template-columns:1fr 1fr}.attempts{grid-template-columns:1fr 1fr}}
+    @media(max-width:650px){.topbar{display:block}.scope{margin-top:16px;width:max-content}.attempts{grid-template-columns:1fr}.compare{padding:12px;border-radius:18px}.compare-grid,.diff-grid{grid-template-columns:1fr}.settings{grid-template-columns:1fr}.compare-title{font-size:20px}.title{font-size:27px}.stats{gap:8px}.stat{padding:12px}.stat b{font-size:17px}.section-head{align-items:flex-start}.section-head h2{font-size:20px}.ghost{padding:8px 10px}.viewer-video button{width:54px;height:54px}}
+  </style>
+</head>
+<body>
+  <div class="mobilebar"><b>사란 · 프롬프트 비교실</b><button id="mobileMenu">장면 선택</button></div>
+  <div class="mobile-scenes" id="mobileScenes"><select id="sceneSelect"></select></div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="mark">ㅅ</div><div><h1>사란 · 프롬프트 비교실</h1><small>GENERATION ARCHIVE</small></div></div>
+      <input id="sceneSearch" class="search" placeholder="장면 검색" aria-label="장면 검색" />
+      <div class="side-label">Story scenes</div>
+      <div class="scene-list" id="sceneList"></div>
+      <div class="sidebar-foot">한 장면을 여러 번 생성해 보고, 무엇이 달라졌는지 비교하는 개인 작업실입니다.</div>
+    </aside>
+    <main>
+      <div class="topbar">
+        <div><div class="eyebrow">GENERATION ARCHIVE · SCENE <span id="sceneNum">03</span></div><h1 class="title">한 장면, 여러 번의 시도</h1><p class="subtitle" id="sceneDescription">같은 장면의 생성 기록을 나란히 놓고 프롬프트 변화와 결과를 비교합니다.</p></div>
+        <div class="scope"><button data-scope="story" class="active">스토리</button><button data-scope="all">전체</button></div>
+      </div>
+      <div class="stats"><div class="stat"><b id="statPeriod">4일</b><span>기간</span></div><div class="stat"><b id="statRuns">6</b><span>생성본</span></div><div class="stat"><b id="statPrompts">4</b><span>프롬프트 버전</span></div><div class="stat"><b>2</b><span>비교 선택</span></div></div>
+      <section class="section">
+        <div class="section-head"><div><h2 id="sceneHeading">장면 03 · 밤의 골목</h2><p>생성본을 선택해 세부 차이를 비교하세요.</p></div><button class="ghost" id="expandAll">모든 시도 펼쳐보기</button></div>
+        <div class="attempts" id="attempts"></div>
+      </section>
+      <section class="compare" id="compareSection">
+        <div class="compare-top"><div><div class="eyebrow">SIDE BY SIDE</div><div class="compare-title">두 생성본 자세히 비교</div></div><button class="ghost" id="playBoth">두 영상 처음부터 재생</button></div>
+        <div class="compare-grid"><div class="viewer"><div class="viewer-head"><b id="headA">A · 생성본 2</b><span id="metaA">v2 · 8s</span></div><div class="viewer-video"><button aria-label="A 재생">▶</button></div></div><div class="viewer"><div class="viewer-head"><b id="headB">B · 생성본 5</b><span id="metaB">v4 · 8s</span></div><div class="viewer-video"><button aria-label="B 재생">▶</button></div></div></div>
+        <div class="compare-controls"><button id="prevPair">← 이전</button><button id="nextPair">다음 →</button></div>
+        <div class="tabs"><button class="tab active" data-tab="diff">프롬프트 변화</button><button class="tab" data-tab="settings">설정 · 참조 자료</button></div>
+        <div class="panel" id="diffPanel"><div class="diff-grid"><article class="prompt-card"><div class="prompt-head"><strong>A PROMPT</strong><button class="copy" data-copy="A">복사</button></div><div class="prompt" id="promptA"></div></article><article class="prompt-card"><div class="prompt-head"><strong>B PROMPT</strong><button class="copy" data-copy="B">복사</button></div><div class="prompt" id="promptB"></div></article></div><button class="ghost" id="toggleFull" style="margin-top:12px">원문 전체 보기</button><div class="full-prompt" id="fullPrompt"></div></div>
+        <div class="panel settings" id="settingsPanel"><dl class="setting"><dt>MODEL</dt><dd>Video Gen v4</dd></dl><dl class="setting"><dt>ASPECT</dt><dd>16:9</dd></dl><dl class="setting"><dt>DURATION</dt><dd>8 sec</dd></dl><dl class="setting"><dt>CAMERA</dt><dd>slow dolly-in</dd></dl><dl class="setting"><dt>REFERENCE</dt><dd>character-sheet-02</dd></dl><dl class="setting"><dt>SEED</dt><dd>locked per attempt</dd></dl></div>
+      </section>
+    </main>
+  </div>
+<script>
+const scenes=[
+ {id:'scene-01',title:'비 내리는 정류장',desc:'첫 만남의 거리감과 빗소리를 테스트한 장면',runs:5,pv:3},
+ {id:'scene-02',title:'낮은 목소리의 대화',desc:'표정과 시선 처리의 미세한 차이를 비교',runs:4,pv:3},
+ {id:'scene-03',title:'밤의 골목',desc:'같은 장면의 생성 기록을 나란히 놓고 프롬프트 변화와 결과를 비교합니다.',runs:6,pv:4},
+ {id:'scene-04',title:'유리창 너머',desc:'반사광과 감정 표현을 조율한 장면',runs:5,pv:4},
+ {id:'scene-05',title:'마지막 계단',desc:'엔딩 직전 카메라 움직임을 반복 검증',runs:3,pv:2},
+];
+const basePrompts=[
+ 'A cinematic night alley. Saran stands under a dim amber street lamp, looking slightly away from camera. Soft rain, restrained acting, realistic skin texture, shallow depth of field. Camera slowly pushes in.',
+ 'A cinematic night alley. Saran stands under a dim amber street lamp, looking directly past camera. Soft rain, restrained acting, realistic skin texture, shallow depth of field. Camera slowly pushes in. Keep background pedestrians minimal.',
+ 'A cinematic night alley after rain. Saran pauses under one warm street lamp, shoulders tense but expression controlled. Wet pavement reflections, no crowd, practical lighting, natural breathing. Slow 50mm dolly-in, no handheld shake.',
+ 'A quiet cinematic night alley after rain. Saran pauses under a single warm street lamp. Her shoulders are tense, expression controlled, eyes fixed just past the camera. Wet pavement catches broken reflections. No crowd. Natural breathing and micro-expressions. Slow 50mm dolly-in, locked horizon, no handheld shake.'
+];
+let current=new URLSearchParams(location.search).get('scene')||'scene-03';
+let pickA=1,pickB=4,expanded=false;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function scene(){return scenes.find(s=>s.id===current)||scenes[2]}
+function attemptsData(){const s=scene();return Array.from({length:s.runs},(_,i)=>({n:i+1,ver:Math.min(s.pv,1+Math.floor(i/1.5)),time:`${9+i}:2${i}`,dur:i%2?8:6,score:72+i*4,prompt:basePrompts[Math.min(basePrompts.length-1,Math.floor(i/1.5))]}))}
+function renderScenes(){const q=($('#sceneSearch')?.value||'').toLowerCase(); const list=scenes.filter(s=>(s.title+s.desc).toLowerCase().includes(q)); $('#sceneList').innerHTML=list.map((s,i)=>`<button class="scene-btn ${s.id===current?'active':''}" data-scene="${s.id}"><div class="scene-no">${String(i+1).padStart(2,'0')}</div><div class="scene-title">${s.title}</div><div class="scene-meta">${s.runs} attempts · ${s.pv} prompt versions</div></button>`).join(''); $$('.scene-btn').forEach(b=>b.onclick=()=>changeScene(b.dataset.scene)); $('#sceneSelect').innerHTML=scenes.map(s=>`<option value="${s.id}" ${s.id===current?'selected':''}>${s.id.replace('scene-','')} · ${s.title}</option>`).join('')}
+function render(){const s=scene(), a=attemptsData(); $('#sceneNum').textContent=current.split('-')[1]; $('#sceneDescription').textContent=s.desc; $('#sceneHeading').textContent=`장면 ${current.split('-')[1]} · ${s.title}`; $('#statRuns').textContent=s.runs; $('#statPrompts').textContent=s.pv; $('#statPeriod').textContent=(Math.max(2,Math.ceil(s.runs/2)+1))+'일'; const show=expanded?a:a.slice(0,3); $('#attempts').innerHTML=show.map((x,i)=>`<article class="attempt ${i===pickA?'selA':''} ${i===pickB?'selB':''}"><div class="thumb"><div class="play">▶</div></div><div class="attempt-row"><div class="attempt-title">생성본 ${x.n}</div><div class="attempt-time">${x.time}</div></div><div class="attempt-tags"><span class="tag">PROMPT v${x.ver}</span><span class="tag">${x.dur}s</span><span class="tag">match ${x.score}%</span></div><div class="selects"><button class="pick ${i===pickA?'active':''}" data-pick="A" data-i="${i}">A로 선택</button><button class="pick ${i===pickB?'active':''}" data-pick="B" data-i="${i}">B로 선택</button></div></article>`).join(''); $$('.pick').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(b.dataset.pick==='A')pickA=i;else pickB=i;if(pickA===pickB){ if(b.dataset.pick==='A') pickB=(i+1)%a.length; else pickA=(i+1)%a.length; } render();}); $('#expandAll').textContent=expanded?'접기':'모든 시도 펼쳐보기'; updateCompare();renderScenes();}
+function markDiff(a,b,side){const aw=a.split(' '),bw=b.split(' ');if(side==='A')return aw.map(w=>bw.includes(w)?w:`<span class="del">${w}</span>`).join(' ');return bw.map(w=>aw.includes(w)?w:`<span class="add">${w}</span>`).join(' ')}
+function updateCompare(){const a=attemptsData();pickA=Math.min(pickA,a.length-1);pickB=Math.min(pickB,a.length-1);if(pickA===pickB)pickB=(pickA+1)%a.length;const A=a[pickA],B=a[pickB];$('#headA').textContent=`A · 생성본 ${A.n}`;$('#headB').textContent=`B · 생성본 ${B.n}`;$('#metaA').textContent=`v${A.ver} · ${A.dur}s`;$('#metaB').textContent=`v${B.ver} · ${B.dur}s`;$('#promptA').innerHTML=markDiff(A.prompt,B.prompt,'A');$('#promptB').innerHTML=markDiff(A.prompt,B.prompt,'B');$('#fullPrompt').textContent=`A\n${A.prompt}\n\nB\n${B.prompt}`}
+function changeScene(id){current=id;pickA=1;pickB=Math.min(4,scene().runs-1);const p=new URLSearchParams(location.search);p.set('view','history');p.set('scene',id);p.set('scope','story');history.pushState({},'',location.pathname+'?'+p.toString());render()}
+$('#sceneSearch').addEventListener('input',renderScenes);$('#expandAll').onclick=()=>{expanded=!expanded;render()};$('#mobileMenu').onclick=()=>$('#mobileScenes').classList.toggle('show');$('#sceneSelect').onchange=e=>{changeScene(e.target.value);$('#mobileScenes').classList.remove('show')};
+$$('.scope button').forEach(b=>b.onclick=()=>{$$('.scope button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=new URLSearchParams(location.search);p.set('scope',b.dataset.scope);history.replaceState({},'',location.pathname+'?'+p.toString())});
+$$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const diff=t.dataset.tab==='diff';$('#diffPanel').style.display=diff?'block':'none';$('#settingsPanel').classList.toggle('active',!diff)});
+$('#toggleFull').onclick=()=>{$('#fullPrompt').classList.toggle('show');$('#toggleFull').textContent=$('#fullPrompt').classList.contains('show')?'원문 닫기':'원문 전체 보기'};
+$$('.copy').forEach(b=>b.onclick=async()=>{const idx=b.dataset.copy==='A'?pickA:pickB;await navigator.clipboard?.writeText(attemptsData()[idx].prompt);const old=b.textContent;b.textContent='복사됨';setTimeout(()=>b.textContent=old,900)});
+$('#nextPair').onclick=()=>{const n=attemptsData().length;pickA=(pickA+1)%n;pickB=(pickB+1)%n;if(pickA===pickB)pickB=(pickB+1)%n;render()};$('#prevPair').onclick=()=>{const n=attemptsData().length;pickA=(pickA-1+n)%n;pickB=(pickB-1+n)%n;if(pickA===pickB)pickA=(pickA-1+n)%n;render()};
+$('#playBoth').onclick=()=>{const b=$('#playBoth');b.textContent='A · B 재생 중…';setTimeout(()=>b.textContent='두 영상 처음부터 재생',1400)};
+window.onpopstate=()=>{current=new URLSearchParams(location.search).get('scene')||'scene-03';render()};
+render();
+</script>
+</body>
+</html>
